@@ -6,6 +6,7 @@ import keyboard
 
 mc = Minecraft.create()
 
+
 start = Vec3(3000000, 90, 3000000)
 mc.setBlock(start.x + 8, 105, start.z + 8, 20)
 mc.player.setPos(start.x + 8.5, 105 + 1, start.z + 8.5)
