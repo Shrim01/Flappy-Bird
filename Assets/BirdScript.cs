@@ -1,4 +1,6 @@
 using Date;
+using JetBrains.Annotations;
+using System.Linq;
 using UnityEngine;
 
 public class BirdScript : MonoBehaviour
@@ -10,6 +12,10 @@ public class BirdScript : MonoBehaviour
     public bool birdIsAlive;
     public GameObject spawner;
     public GameObject gameOverScreen;
+    public AudioSource sound;
+    public AudioClip dead;
+    public AudioClip jump;
+    public AudioClip score;
 
     void Start()
     {
@@ -17,7 +23,7 @@ public class BirdScript : MonoBehaviour
         logic = GameObject.FindGameObjectWithTag("Logic").GetComponent<LogicScript>();
         myRigidbody.constraints = RigidbodyConstraints2D.FreezePositionY;
 
-        if (GameData.sprite!=null)
+        if (GameData.sprite != null)
             gameObject.GetComponent<SpriteRenderer>().sprite = GameData.sprite;
     }
 
@@ -29,23 +35,34 @@ public class BirdScript : MonoBehaviour
         {
             touch = Input.GetTouch(0).phase == TouchPhase.Began;
         }
-        catch { }
+        catch
+        {
+        }
+
         if ((touch || Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) && birdIsAlive)
         {
+            sound.PlayOneShot(jump);
             if (startPlay)
             {
                 spawner.SetActive(true);
                 myRigidbody.constraints &= ~RigidbodyConstraints2D.FreezePositionY;
                 startPlay = false;
             }
+
             myRigidbody.velocity = Vector2.up * flapStrength;
         }
     }
 
     private void OnCollisionEnter2D(Collision2D other)
     {
+        sound.PlayOneShot(dead);
         birdIsAlive = false;
         spawner.SetActive(false);
         gameOverScreen.SetActive(true);
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        sound.PlayOneShot(score);
     }
 }
